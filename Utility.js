@@ -2,8 +2,6 @@ const {
     Channel,
     MessageEmbed
 } = require('discord.js');
-const ytdl = require("@distube/ytdl");
-const ytsr = require('ytsr');
 
 /**
  * @param {Channel} channel - The channel
