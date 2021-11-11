@@ -12,6 +12,10 @@ const client = new Client({
     ]
 });
 
+client.commands = new Collection();
+client.aliases = new Collection();
+client.queue = new Map();
+
 client.on('ready', () => {
     console.log(`${client.user.username} is online!`);
     require('./handlers/EventHandler')(client);
