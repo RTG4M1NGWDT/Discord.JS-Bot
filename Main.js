@@ -1,5 +1,6 @@
 const {
     Client,
+    Collection,
     Intents
 } = require('discord.js');
 const {
@@ -8,7 +9,8 @@ const {
 
 const client = new Client({
     intents: [
-        Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES
+        Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_VOICE_STATES
     ]
 });
 
@@ -19,6 +21,7 @@ client.queue = new Map();
 client.on('ready', () => {
     console.log(`${client.user.username} is online!`);
     require('./handlers/EventHandler')(client);
+    require('./handlers/CommandHandler')(client);
 });
 
-client.login(TOKEN);
+client.login("ODc1MDg1ODI3NjQ5MjAwMTQ4.YRQZLw.a5Fbp_9nJZ1L92SiZGQAHKF-mkA");
