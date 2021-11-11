@@ -5,7 +5,7 @@
 <h4 align="center">A Discord Bot focused on music features.</h4>
 
 <p align="center">
-  <a href="a">
+  <a href="https://discord.gg/jSSg4BTPD4">
     <img src="https://discordapp.com/api/guilds/829662278046711848/widget.png?style=shield" alt="Discord Server">
   </a>
 </p>
