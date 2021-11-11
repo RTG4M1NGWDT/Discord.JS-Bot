@@ -24,4 +24,4 @@ client.on('ready', () => {
     require('./handlers/CommandHandler')(client);
 });
 
-client.login("ODc1MDg1ODI3NjQ5MjAwMTQ4.YRQZLw.a5Fbp_9nJZ1L92SiZGQAHKF-mkA");
+client.login(TOKEN);
