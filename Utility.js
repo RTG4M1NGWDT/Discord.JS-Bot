@@ -1,4 +1,9 @@
-const { Channel, MessageEmbed } = require('discord.js');
+const {
+    Channel,
+    MessageEmbed
+} = require('discord.js');
+const ytdl = require("@distube/ytdl");
+const ytsr = require('ytsr');
 
 /**
  * @param {Channel} channel - The channel
@@ -6,40 +11,58 @@ const { Channel, MessageEmbed } = require('discord.js');
  * @param {string} color - The color
  * @param {string} description - The description
  * @param {Object} fields - The fields
+ * @param {string} footer - The footer
  * @param {string} image - The image
  * @param {string} thumbnail - The thumbnail
  * @param {string[]} timestamp - The timestamp 
  * @param {string} url - The url
  */
-module.exports.sendEmbed = (channel, title, color, description, fields, image, thumbnail, timestamp, url) => {
+const sendEmbed = (channel, title, color, description, fields, footer, image, thumbnail, timestamp, url) => {
     const embed = new MessageEmbed()
 
-    if(!channel) return console.warn("Please provide a value for channel!");
-    if(!(channel instanceof Channel)) return console.warn("That is not a channel! Please provide a channel!")
-    
-    if(!title) title = "Null";
+    if (!channel) return console.warn("Please provide a value for channel!");
+    if (!(channel instanceof Channel)) return console.warn("That is not a channel! Please provide a channel!")
+
+    if (!title) title = "Null";
     embed.setTitle(`${title}`)
-    
-    if(!color) color = "BLUE";
+
+    if (!color) color = "BLUE";
     embed.setColor(`${color}`)
-    
-    if(!description) {}
-    else embed.setDescription(description);
 
-    if(!fields) {}
-    else embed.addFields(fields);
+    if (!description) {} else embed.setDescription(description);
 
-    if(!image) {}
-    else embed.setImage(image);
+    if (!fields) {} else embed.addFields(fields);
 
-    if(!thumbnail) {}
-    else embed.setThumbnail(thumbnail);
+    if (!footer) {} else embed.setFooter(footer);
 
-    if(!timestamp) {}
-    else embed.setTimestamp(timestamp);
+    if (!image) {} else embed.setImage(image);
 
-    if(!url) {}
-    else embed.setURL(url);
+    if (!thumbnail) {} else embed.setThumbnail(thumbnail);
 
-    channel.send({embeds: [embed]});
+    if (!timestamp) {} else embed.setTimestamp(timestamp);
+
+    if (!url) {} else embed.setURL(url);
+
+    channel.send({
+        embeds: [embed]
+    });
 }
+
+
+/**
+ * @param {number} seconds - The seconds
+ */
+const getDuration = (seconds) => {
+    const format = val => `0${Math.floor(val)}`.slice(-2);
+    const hours = seconds / 3600;
+    const minutes = (seconds % 3600) / 60;
+
+    if (Math.floor(hours) == 0) {
+        return [minutes, seconds % 60].map(format).join(':');
+    }
+
+    return [hours, minutes, seconds % 60].map(format).join(':')
+}
+
+module.exports.sendEmbed = sendEmbed;
+module.exports.getDuration = getDuration;
