@@ -1,5 +1,8 @@
 const {
+    Client,
     Channel,
+    Guild,
+    Message,
     MessageEmbed
 } = require('discord.js');
 const ytdl = require('ytdl-core');
