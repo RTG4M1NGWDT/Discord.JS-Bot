@@ -6,6 +6,7 @@ const {
     MessageEmbed
 } = require('discord.js');
 const ytdl = require('ytdl-core');
+const ytsr = require('ytsr');
 const {
     joinVoiceChannel,
     createAudioPlayer,
@@ -80,7 +81,7 @@ const getDuration = (seconds) => {
 */
 const playSong = async (guild, song, client) => {
     const song_queue = client.queue.get(guild.id);
-    if (!songs) {
+    if (!song) {
         song_queue.connection.destroy();
         sendEmbed(song_queue.text_channel, "No more songs", "RED", "There are no more songs left in the queue so I have left the voice channel.");
         client.queue.delete(guild.id);
