@@ -20,8 +20,8 @@ client.queue = new Map();
 
 client.on('ready', () => {
     console.log(`${client.user.username} is online!`);
-    require('./handlers/EventHandler.cjs')(client);
-    require('./handlers/CommandHandler.cjs')(client);
+    require('./handlers/EventHandler.js')(client);
+    require('./handlers/CommandHandler.js')(client);
 });
 
 client.login(TOKEN);
