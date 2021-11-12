@@ -9,7 +9,8 @@ const {
 } = require('@discordjs/voice');
 const {
     getDuration,
-    sendEmbed
+    sendEmbed,
+    playSong
 } = require('../../Utility.js');
 
 module.exports = {
@@ -72,7 +73,7 @@ module.exports = {
                     adapterCreator: message.guild.voiceAdapterCreator
                 });
                 queue_constructor.connection = connection1;
-                video_player(message.guild, queue_constructor.songs[0], client);
+                playSong(message.guild, queue_constructor.songs[0], client);
             } catch (err) {
                 client.queue.delete(message.guild.id)
                 sendEmbed(message.channel, "ERROR", "RED", "An error has occured");
@@ -84,29 +85,5 @@ module.exports = {
             sendEmbed(message.channel, "Song Added", "BLUE", `Added ${song.name} to the queue!`);
         }
 
-    }
-}
-const video_player = async (guild, song, client) => {
-    const song_queue = client.queue.get(guild.id);
-    const Discord = require('discord.js');
-    if (!song) {
-        song_queue.connection.destroy();
-        sendEmbed(song_queue.text_channel, "No more songs", "RED", "There are no more songs left in the queue so I have left the voice channel.");
-        client.queue.delete(guild.id);
-        return;
-    } else {
-        const stream = ytdl(song.url, {
-            filter: 'audioonly'
-        });
-        let resource = createAudioResource(stream, {
-            inputType: StreamType.Arbitrary,
-        });
-        song_queue.audio_player.play(resource);
-        song_queue.connection.subscribe(song_queue.audio_player);
-        song_queue.audio_player.on(AudioPlayerStatus.Idle, () => {
-            song_queue.songs.shift();
-            video_player(guild, song_queue.songs[0], client);
-        });
-        sendEmbed(song_queue.text_channel, "Now Playing", "BLUE", `Now Playing ${song.name}`);
     }
 }
