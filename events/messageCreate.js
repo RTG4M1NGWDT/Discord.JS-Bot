@@ -1,4 +1,4 @@
-const { sendEmbed } = require('../Utility.cjs');
+const { sendEmbed } = require('../Utility.js');
 
 module.exports = async (client, message) => {
   if (message.author.bot || message.channel.type == "dm") return;
