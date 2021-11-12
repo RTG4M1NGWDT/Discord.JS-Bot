@@ -96,3 +96,4 @@ const playSong = async (guild, song, client) => {
 
 module.exports.sendEmbed = sendEmbed;
 module.exports.getDuration = getDuration;
+module.exports.playSong = playSong;
