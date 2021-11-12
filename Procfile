@@ -1,1 +1,1 @@
-Worker: node Main.cjs
+Worker: node Main.js
