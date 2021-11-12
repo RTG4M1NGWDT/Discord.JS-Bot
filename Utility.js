@@ -78,11 +78,9 @@ const playSong = async (guild, songs, client) => {
         client.queue.delete(guild.id);
         return;
     } else {
-        for(const song of songs) {
             const stream = ytdl(song.url, {
                 filter: 'audioonly'
             });
-        }
         let resource = createAudioResource(stream, {
             inputType: StreamType.Arbitrary,
         });
