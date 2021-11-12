@@ -10,12 +10,12 @@ const {
 const {
     getDuration,
     sendEmbed,
-    playSong
+    play
 } = require('../../Utility.js');
 
 module.exports = {
     aliases: ['p'],
     async execute(client, message, args) {
-
+        play(message, args.join(" "));
     }
 }
