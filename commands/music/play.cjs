@@ -10,7 +10,7 @@ const {
 const {
     getDuration,
     sendEmbed
-} = require('../../Utility');
+} = require('../../Utility.cjs');
 
 module.exports = {
     aliases: ['p'],
