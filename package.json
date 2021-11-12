@@ -21,12 +21,12 @@
   "homepage": "https://github.com/RTG4M1NGWDT/Discord.JS-Music#readme",
   "dependencies": {
     "@discordjs/opus": "^0.6.0",
-    "@discordjs/voice": "^0.7.5",
+    "@discordjs/voice": "^0.7.2",
     "discord.js": "^13.3.1",
     "ffmpeg-static": "^4.4.0",
     "sodium": "^3.0.2",
-    "yt-search": "^2.10.2",
     "ytdl-core": "^4.9.1",
+    "ytpl": "^2.2.3",
     "ytsr": "^3.5.3"
   },
   "engines": {
