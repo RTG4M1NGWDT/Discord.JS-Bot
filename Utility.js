@@ -12,16 +12,16 @@ const {
 } = require('@discordjs/voice');
 
 /**
- * @param {Channel} channel - The channel
- * @param {string} title - The title
- * @param {string} color - The color
- * @param {string} description - The description
- * @param {Object} fields - The fields
- * @param {string} footer - The footer
- * @param {string} image - The image
- * @param {string} thumbnail - The thumbnail
- * @param {string[]} timestamp - The timestamp 
- * @param {string} url - The url
+ * @param {Channel} channel - Represents any channel on Discord.
+ * @param {string} title - The title.
+ * @param {string} color - The color.
+ * @param {string} description - The description.
+ * @param {Object} fields - The fields.
+ * @param {string} footer - The footer.
+ * @param {string} image - The image.
+ * @param {string} thumbnail - The thumbnail.
+ * @param {string[]} timestamp - The timestamp. 
+ * @param {string} url - The url.
  */
 const sendEmbed = (channel, title, color, description, fields, footer, image, thumbnail, timestamp, url) => {
     const embed = new MessageEmbed()
@@ -70,7 +70,12 @@ const getDuration = (seconds) => {
     return [hours, minutes, seconds % 60].map(format).join(':')
 }
 
-const playSong = async (guild, songs, client) => {
+/**
+ * @param {Guild} guild - Represents a guild (or a server) on Discord.
+ * @param {Object} song - The songs.
+ * @param {Client} client - The main hub for interacting with the Discord API.
+*/
+const playSong = async (guild, song, client) => {
     const song_queue = client.queue.get(guild.id);
     if (!songs) {
         song_queue.connection.destroy();
@@ -94,6 +99,86 @@ const playSong = async (guild, songs, client) => {
     }
 }
 
+/**
+* @param {Message} message
+* @param {Object} song
+*/
+const play = async (message, query) => {
+    const voice_channel = message.member.voice.channel;
+    
+    if (!voice_channel) {
+        return sendEmbed(message.channel, "ERROR", "RED", "Please join a voice channel first!");
+    }
+
+    const server_queue = message.client.queue.get(message.guild.id);
+    
+    if (!query.length) return sendEmbed(message.channel, "ERROR", "RED", "Please specify what song you want me to play!")
+    
+    let song = {};
+    const search = await ytsr(query);
+    const song_info = await ytdl.getInfo(search.items[0].url);
+    
+    song = {
+        age_restricted: song_info.videoDetails.age_restricted,
+        chapters: song_info.videoDetails.chapters,
+        dislikes: song_info.videoDetails.dislikes,
+        duration: getDuration(song_info.videoDetails.lengthSeconds),
+        formattedDuration: `${getDuration(song_info.videoDetails.lengthSeconds)}`,
+        id: song_info.videoDetails.videoId,
+        isLive: song_info.videoDetails.isLiveContent,
+        likes: song_info.videoDetails.likes,
+        member: message.member,
+        name: song_info.videoDetails.title,
+        related: song_info.related_videos,
+        thumbnail: song_info.videoDetails.thumbnails[0].url,
+        uploader: {
+            name: song_info.videoDetails.author.name,
+            url: song_info.videoDetails.author.channel_url,
+        },
+        url: song_info.videoDetails.video_url,
+        user: message.member.user,
+        views: song_info.videoDetails.viewCount
+    }
+    
+    if (!server_queue) {
+        const player = createAudioPlayer();
+        
+        player.on('error', error => {
+            console.error(error);
+            sendEmbed(message.channel, "ERROR", "RED", "An error has occured");
+        });
+        
+        const queue_constructor = {
+            voice_channel: voice_channel,
+                text_channel: message.channel,
+                connection: null,
+                songs: [],
+                audio_player: player
+        }
+        
+        message.client.queue.set(message.guild.id, queue_constructor);
+        queue_constructor.songs.push(song);
+        
+        try {
+            const connection1 = await joinVoiceChannel({
+                channelId: message.member.voice.channel.id,
+                guildId: message.guild.id,
+                adapterCreator: message.guild.voiceAdapterCreator
+            });
+            
+            queue_constructor.connection = connection1;
+            playSong(message.guild, queue_constructor.songs[0], message.client);
+        } catch (err) {
+            message.client.queue.delete(message.guild.id)
+            sendEmbed(message.channel, "ERROR", "RED", "An error has occured");
+            throw err;
+        }
+    } else {
+        server_queue.songs.push(song);
+        sendEmbed(message.channel, "Song Added", "BLUE", `Added ${song.name} to the queue!`);
+    }
+}
+
 module.exports.sendEmbed = sendEmbed;
 module.exports.getDuration = getDuration;
-module.exports.playSong = playSong;
+module.exports.play = play;
