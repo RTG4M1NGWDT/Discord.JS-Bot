@@ -2,6 +2,14 @@ const {
     Channel,
     MessageEmbed
 } = require('discord.js');
+const ytdl = require('ytdl-core');
+const {
+    joinVoiceChannel,
+    createAudioPlayer,
+    createAudioResource,
+    StreamType,
+    AudioPlayerStatus
+} = require('@discordjs/voice');
 
 /**
  * @param {Channel} channel - The channel
@@ -60,6 +68,30 @@ const getDuration = (seconds) => {
     }
 
     return [hours, minutes, seconds % 60].map(format).join(':')
+}
+
+const playSong = async (guild, song, client) => {
+    const song_queue = client.queue.get(guild.id);
+    if (!song) {
+        song_queue.connection.destroy();
+        sendEmbed(song_queue.text_channel, "No more songs", "RED", "There are no more songs left in the queue so I have left the voice channel.");
+        client.queue.delete(guild.id);
+        return;
+    } else {
+        const stream = ytdl(song.url, {
+            filter: 'audioonly'
+        });
+        let resource = createAudioResource(stream, {
+            inputType: StreamType.Arbitrary,
+        });
+        song_queue.audio_player.play(resource);
+        song_queue.connection.subscribe(song_queue.audio_player);
+        song_queue.audio_player.on(AudioPlayerStatus.Idle, () => {
+            song_queue.songs.shift();
+            playSong(guild, song_queue.songs[0], client);
+        });
+        sendEmbed(song_queue.text_channel, "Now Playing", "BLUE", `Now Playing ${song.name}`);
+    }
 }
 
 module.exports.sendEmbed = sendEmbed;
