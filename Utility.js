@@ -70,17 +70,19 @@ const getDuration = (seconds) => {
     return [hours, minutes, seconds % 60].map(format).join(':')
 }
 
-const playSong = async (guild, song, client) => {
+const playSong = async (guild, songs, client) => {
     const song_queue = client.queue.get(guild.id);
-    if (!song) {
+    if (!songs) {
         song_queue.connection.destroy();
         sendEmbed(song_queue.text_channel, "No more songs", "RED", "There are no more songs left in the queue so I have left the voice channel.");
         client.queue.delete(guild.id);
         return;
     } else {
-        const stream = ytdl(song.url, {
-            filter: 'audioonly'
-        });
+        for(const song of songs) {
+            const stream = ytdl(song.url, {
+                filter: 'audioonly'
+            });
+        }
         let resource = createAudioResource(stream, {
             inputType: StreamType.Arbitrary,
         });
