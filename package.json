@@ -21,7 +21,7 @@
   "homepage": "https://github.com/RTG4M1NGWDT/Discord.JS-Music#readme",
   "dependencies": {
     "@discordjs/opus": "^0.6.0",
-    "@discordjs/voice": "^0.7.3",
+    "@discordjs/voice": "^0.7.5",
     "discord.js": "^13.3.1",
     "ffmpeg-static": "^4.4.0",
     "sodium": "^3.0.2",
