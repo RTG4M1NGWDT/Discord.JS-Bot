@@ -232,7 +232,14 @@ const getQueue = (queue) => {
 
 const skip = (queue) => {
   queue.audio_player.stop();
-  queue.text_channel.send("Skipped song!");
+  sendEmbed(queue.text_channel, "Song Skipped!", "BLUE", "Song Skipped!");
+}
+
+const disconnect = (queue) => {
+  queue.connection.destroy();
+  const message = queue.message;
+  sendEmbed(queue.text_channel, "Music Stopped!", "BLUE", "Music Stopped!");
+  message.client.queue.delete(queue.text_channel.guild.id);
 }
 
 module.exports.sendEmbed = sendEmbed;
@@ -241,3 +248,4 @@ module.exports.play = play;
 module.exports.toggleAutoplay = toggleAutoplay;
 module.exports.getQueue = getQueue;
 module.exports.skip = skip;
+module.exports.disconnect = disconnect;
