@@ -6,9 +6,9 @@ const ytdl = require('ytdl-core');
 module.exports = {
   aliases: [],
   async execute(client, message, args) {
-    const search = await ytsr(queue.nowPlaying.name);
+    const search = await ytsr(client.queue.get(message.guild.id).nowPlaying.name);
     const info = await ytdl.getInfo(search.items[0].url)
     const related = info.related_videos[0];
-    play(message, related[0].title)
-  }    
+    play(message, related.title);
+  }
 }
