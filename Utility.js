@@ -82,10 +82,14 @@ const getDuration = (seconds) => {
 const playSong = async (guild, song, client) => {
     const song_queue = client.queue.get(guild.id);
     if (!song) {
-        song_queue.connection.destroy();
-        sendEmbed(song_queue.text_channel, "No more songs", "RED", "There are no more songs left in the queue so I have left the voice channel.");
-        client.queue.delete(guild.id);
-        return;
+      setTimeout(() => {
+        if(!song) {
+          song_queue.connection.destroy();
+          sendEmbed(song_queue.text_channel, "No more songs", "RED", "There are no more songs left in the queue so I have left the voice channel.");
+          client.queue.delete(guild.id);
+          return;
+        }
+      }, 10000)
     } else {
             const stream = ytdl(song.url, {
                 filter: 'audioonly'
@@ -213,7 +217,27 @@ const toggleAutoplay = async (message) => {
   }
 }
 
+const getQueue = (queue) => {
+  let allSongs = [];
+  
+  try {
+    for (var index in queue.songs) {
+      allSongs.push(queue.songs[index].name);
+    }
+    return allSongs.join("\n");
+  } catch(err) {
+    return "Queue is empty";
+  }
+}
+
+const skip = (queue) => {
+  queue.audio_player.stop();
+  queue.text_channel.send("Skipped song!");
+}
+
 module.exports.sendEmbed = sendEmbed;
 module.exports.getDuration = getDuration;
 module.exports.play = play;
 module.exports.toggleAutoplay = toggleAutoplay;
+module.exports.getQueue = getQueue;
+module.exports.skip = skip;
