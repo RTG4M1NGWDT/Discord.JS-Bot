@@ -86,6 +86,15 @@ const playSong = async (guild, song, client) => {
         sendEmbed(song_queue.text_channel, "No more songs", "RED", "There are no more songs left in the queue so I have left the voice channel.");
         client.queue.delete(guild.id);
         return;
+
+      setTimeout(() => {
+        if(!song) {
+          song_queue.connection.destroy();
+          sendEmbed(song_queue.text_channel, "No more songs", "RED", "There are no more songs left in the queue so I have left the voice channel.");
+          client.queue.delete(guild.id);
+          return;
+        }
+      }, 10000)
     } else {
             const stream = ytdl(song.url, {
                 filter: 'audioonly'
@@ -95,11 +104,20 @@ const playSong = async (guild, song, client) => {
         });
         song_queue.audio_player.play(resource);
         song_queue.connection.subscribe(song_queue.audio_player);
-        song_queue.audio_player.on(AudioPlayerStatus.Idle, () => {
+        song_queue.audio_player.on(AudioPlayerStatus.Idle, async () => {
             song_queue.songs.shift();
             playSong(guild, song_queue.songs[0], client);
         });
         sendEmbed(song_queue.text_channel, "Now Playing", "BLUE", `Now Playing ${song.name}`);
+        song_queue.nowPlaying = song;
+        
+        if(song_queue.autoplay == true) {
+          const search = await ytsr(song_queue.nowPlaying.name);
+          const info = await ytdl.getInfo(search.items[0].url)
+          const related = info.related_videos;
+          const index = Math.floor(Math.random() * (related.length - 2 - 0 + 1) + 0);
+          play(song_queue.message, related[index].title)
+      }
     }
 }
 
@@ -153,11 +171,14 @@ const play = async (message, query) => {
         });
         
         const queue_constructor = {
+            message: message,
             voice_channel: voice_channel,
-                text_channel: message.channel,
-                connection: null,
-                songs: [],
-                audio_player: player
+            text_channel: message.channel,
+            connection: null,
+            songs: [],
+            audio_player: player,
+            autoplay: false,
+            nowPlaying: null
         }
         
         message.client.queue.set(message.guild.id, queue_constructor);
@@ -183,6 +204,53 @@ const play = async (message, query) => {
     }
 }
 
+const toggleAutoplay = async (message) => {
+  const queue = message.client.queue.get(message.guild.id);
+  if(!queue || !queue.songs) {
+    return sendEmbed(message.channel, "ERROR", "RED", "Please play some songs before using this command.");
+  }
+  message.client.queue.get(message.guild.id).autoplay = !message.client.queue.get(message.guild.id).autoplay;
+  
+  message.channel.send(`Autoplay activation is currently ${queue.autoplay.toString()}`)
+
+  if(queue.autoplay == true) {
+    const search = await ytsr(queue.nowPlaying.name);
+    const info = await ytdl.getInfo(search.items[0].url)
+    const related = info.related_videos;
+    const index = Math.floor(Math.random() * (related.length - 2 - 0 + 1) + 0);
+    play(message, related[index].title)
+  }
+}
+
+const getQueue = (queue) => {
+  let allSongs = [];
+  
+  try {
+    for (var index in queue.songs) {
+      allSongs.push(queue.songs[index].name);
+    }
+    return allSongs.join("\n");
+  } catch(err) {
+    return "Queue is empty";
+  }
+}
+
+const skip = (queue) => {
+  queue.audio_player.stop();
+  sendEmbed(queue.text_channel, "Song Skipped!", "BLUE", "Song Skipped!");
+}
+
+const disconnect = (queue) => {
+  queue.connection.destroy();
+  const message = queue.message;
+  sendEmbed(queue.text_channel, "Music Stopped!", "BLUE", "Music Stopped!");
+  message.client.queue.delete(queue.text_channel.guild.id);
+}
+
 module.exports.sendEmbed = sendEmbed;
 module.exports.getDuration = getDuration;
 module.exports.play = play;
+module.exports.toggleAutoplay = toggleAutoplay;
+module.exports.getQueue = getQueue;
+module.exports.skip = skip;
+module.exports.disconnect = disconnect;
