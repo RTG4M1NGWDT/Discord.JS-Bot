@@ -1,8 +1,8 @@
 <h1 align="center">
-  Discord.JS-Music
+  Discord.JS-Bot
 </h1>
 
-<h4 align="center">A Discord Bot focused on music features.</h4>
+<h4 align="center">A Discord Bot.</h4>
 
 <p align="center">
   <a href="https://discord.gg/jSSg4BTPD4">
@@ -25,7 +25,7 @@
 
 # Overview
 
-This is a repository containing code of a Discord.js V13 Discord Bot. I will continue to work on the bot in this github repository to see if I can make the best music bot.
+This is a repository containing code of a Discord.js V13 Discord Bot. I will continue to work on the bot in this github repository to see if I can make the best bot.
 
 # Community
 
