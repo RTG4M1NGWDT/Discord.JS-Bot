@@ -1,4 +1,2 @@
-const ClientManager = require('./Manager/ClientManager');
-
-client = new ClientManager();
+const client = new (require('./base/Client'));
 client.build();
